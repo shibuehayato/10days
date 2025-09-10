@@ -39,6 +39,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int dreamBackTex = Novice::LoadTexture("dream_backGround.png");
     int currentBackgroundTex = realBackTex;   //現在の描画している背景
 
+    //int titleSceneTex = Novice::LoadTexture("Title.png");
+    //int clearSceneTex = Novice::LoadTexture("Clear.png");
+
+    //操作説明用テクスチャ読み込み
+    int pressSpaceTex = Novice::LoadTexture("pushSpase.png");
+    float blinkTimer_ = 0.0f;
+    bool isDrawing_ = true;
+    const float blinkDuration_ = 0.25f; //点滅周期
+
+
     // プレイヤー初期位置をマップ中央に設定
     int playerSize = tileSize; // タイルと同じサイズ
     Player player(windowWidth / 2, windowHeight / 2, playerSize);
@@ -131,6 +141,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
             }
         }
 
+        blinkTimer_ += 0.01f;
+        if (blinkTimer_ >= blinkDuration_)
+        {
+            isDrawing_ = !isDrawing_;
+            blinkTimer_ = 0.0f;
+        }
+
         ///
         /// ↑更新処理ここまで
         ///
@@ -142,6 +159,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         // 左上から描画（右下も画面端ぴったり）
 
         Novice::DrawSprite(0, 0, currentBackgroundTex, windowWidth, windowHeight , 0.0f, WHITE);
+        
+        //点滅描画
+        if (isDrawing_)
+        {
+            Novice::DrawSprite(0, 0, pressSpaceTex, 1, 1, 0.0f, WHITE);
+        }
 
         currentMap->Draw(0, 0, tileSize);
 
