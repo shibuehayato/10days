@@ -65,6 +65,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool isDrawing_ = true;
 	const float blinkDuration_ = 0.25f; //点滅周期
 
+	int attentionTex = Novice::LoadTexture("attention.png");
+	bool isAttention = true;
+
 	//数字テクスチャ読み込み
 	int power1 = Novice::LoadTexture("power1.png");
 	int power2 = Novice::LoadTexture("power2.png");
@@ -145,92 +148,104 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 		case GAME:
 
-			player.Update(keys, *currentMap, tileSize);
-
-			// マウスクリックでブロックを置く
-			//int mouseX, mouseY;
-			//Novice::GetMousePosition(&mouseX, &mouseY);
-			//
-			//if (Novice::IsTriggerMouse(RI_MOUSE_LEFT_BUTTON_DOWN)) {
-			//    int tileX = mouseX / tileSize;
-			//    int tileY = mouseY / tileSize;
-			//    map.SetTile(tileX, tileY, 1); // ブロックを置く
-			//    
-			//}
-
-			// --- ゴール判定 ---
+			if (isAttention == true)
 			{
-				int playerTileX = player.GetX() / tileSize;
-				int playerTileY = player.GetY() / tileSize;
-				if (playerTileX == goalX && playerTileY == goalY) {
-					currentScene = GAMECLEAR;
+				if (keys[DIK_SPACE] && !preKeys[DIK_SPACE])
+				{
+					isAttention = false;
 				}
 			}
+			else
+			{
 
-			// --- map2 にいるときの操作 ---
-			if (currentMap == &map2) {
-				// 上キーで左ブロックの重さを増やす
-				if (keys[DIK_UP] && !preKeys[DIK_UP]) {
-					if (weightLeft < 5) { // 最大5まで
-						weightLeft++;
+				player.Update(keys, *currentMap, tileSize);
+
+				// マウスクリックでブロックを置く
+				//int mouseX, mouseY;
+				//Novice::GetMousePosition(&mouseX, &mouseY);
+				//
+				//if (Novice::IsTriggerMouse(RI_MOUSE_LEFT_BUTTON_DOWN)) {
+				//    int tileX = mouseX / tileSize;
+				//    int tileY = mouseY / tileSize;
+				//    map.SetTile(tileX, tileY, 1); // ブロックを置く
+				//    
+				//}
+
+
+
+				// --- ゴール判定 ---
+				{
+					int playerTileX = player.GetX() / tileSize;
+					int playerTileY = player.GetY() / tileSize;
+					if (playerTileX == goalX && playerTileY == goalY) {
+						currentScene = GAMECLEAR;
 					}
 				}
-			}
 
-			// --- マップ切り替え（Rキーで切り替え） ---
-			if (keys[DIK_R] && !preKeys[DIK_R]) {
-				if (currentMap == &map) {
-					currentMap = &map2;
-					currentBackgroundTex = dreamBackTex;
+				// --- map2 にいるときの操作 ---
+				if (currentMap == &map2) {
+					// 上キーで左ブロックの重さを増やす
+					if (keys[DIK_UP] && !preKeys[DIK_UP]) {
+						if (weightLeft < 5) { // 最大5まで
+							weightLeft++;
+						}
+					}
 				}
-				else {
-					currentMap = &map;
-					currentBackgroundTex = realBackTex;
 
-					// map を作り直して再配置
-					//map = Map(tilesX, tilesY);
-					map.Clear();
-					map.SetTile(29, 10, 1);
-					map.SetTile(30, 10, 1);
-					map.SetTile(26, 13, 1);
-
-
-					if (weightLeft > weightRight) {
-						// 左の方が重い → Y座標を入れ替える
-						map.SetTile(22, 14, 1); // 左を下に
-						map.SetTile(28, 10, 1); // 右を上に
+				// --- マップ切り替え（Rキーで切り替え） ---
+				if (keys[DIK_R] && !preKeys[DIK_R]) {
+					if (currentMap == &map) {
+						currentMap = &map2;
+						currentBackgroundTex = dreamBackTex;
 					}
 					else {
-						// そのまま
-						map.SetTile(22, 10, 1);
-						map.SetTile(28, 14, 1);
-					}
+						currentMap = &map;
+						currentBackgroundTex = realBackTex;
 
+						// map を作り直して再配置
+						//map = Map(tilesX, tilesY);
+						map.Clear();
+						map.SetTile(29, 10, 1);
+						map.SetTile(30, 10, 1);
+						map.SetTile(26, 13, 1);
+
+
+						if (weightLeft > weightRight) {
+							// 左の方が重い → Y座標を入れ替える
+							map.SetTile(22, 14, 1); // 左を下に
+							map.SetTile(28, 10, 1); // 右を上に
+						}
+						else {
+							// そのまま
+							map.SetTile(22, 10, 1);
+							map.SetTile(28, 14, 1);
+						}
+
+					}
+				}
+
+				//重さの画像変更
+				if (weightLeft == 1)
+				{
+					currentPower = power1;
+				}
+				else if (weightLeft == 2)
+				{
+					currentPower = power2;
+				}
+				else if (weightLeft == 3)
+				{
+					currentPower = power3;
+				}
+				else if (weightLeft == 4)
+				{
+					currentPower = power4;
+				}
+				else if (weightLeft == 5)
+				{
+					currentPower = power5;
 				}
 			}
-
-			//重さの画像変更
-			if (weightLeft == 1)
-			{
-				currentPower = power1;
-			}
-			else if (weightLeft == 2)
-			{
-				currentPower = power2;
-			}
-			else if (weightLeft == 3)
-			{
-				currentPower = power3;
-			}
-			else if (weightLeft == 4)
-			{
-				currentPower = power4;
-			}
-			else if (weightLeft == 5)
-			{
-				currentPower = power5;
-			}
-
 			break;
 		case GAMECLEAR:
 
@@ -311,6 +326,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			else {
 				//Novice::ScreenPrintf(640, 330, "yume");       // map2のとき
 			}
+
+			if (isAttention == true)
+			{
+				Novice::DrawSprite(0, 0, attentionTex, 1, 1, 0.0f, WHITE);
+			}
+			
+
+
 			break;
 		case GAMECLEAR:
 			//Novice::ScreenPrintf(640, 330, "clear");
