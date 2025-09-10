@@ -224,6 +224,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							// 左の方が重い → Y座標を入れ替える
 							map.SetTile(22, 14, 1); // 左を下に
 							map.SetTile(28, 10, 1); // 右を上に
+							
 						}
 						else {
 							// そのまま
@@ -319,11 +320,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				Novice::DrawSprite(880, 560, currentPower, 1, 1, 0.0f, 0xffffffff);
 				Novice::DrawSprite(1120, 400, power4, 1, 1, 0.0f, 0xffffffff);
+				Novice::DrawLine(900, 580, 1140, 420, WHITE);
 			}
 			else
 			{
 				Novice::DrawSprite(880, 400, currentPower, 1, 1, 0.0f, 0xffffffff);
 				Novice::DrawSprite(1120, 560, power4, 1, 1, 0.0f, 0xffffffff);
+				Novice::DrawLine(900, 420, 1140, 580, WHITE);
 			}
 			player.Draw();
 			//Novice::ScreenPrintf(640, 360, "Left Weight: %d", weightLeft);
@@ -409,4 +412,5 @@ void InitializeGame(Player& player, Map& map, Map& map2,
 	weightRight = 4;
 
 	currentMap = &map;
+
 }
