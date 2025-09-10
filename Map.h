@@ -3,7 +3,7 @@
 
 class Map {
 public:
-    Map(int width, int height); // タイル数を指定して生成
+    Map(int width, int height, int mapTexture); // タイル数を指定して生成
     ~Map();
     void Draw(int originX, int originY, int tileSize); // 描画
 
@@ -22,4 +22,7 @@ private:
     int width_;
     int height_;
     int** data_; // マップデータ
+
+    int MapTexture_ = 0;
+
 };

@@ -2,9 +2,10 @@
 #include <cstring>
 #include <cstdlib>
 
-Map::Map(int width, int height) : width_(width), height_(height) {
+Map::Map(int width, int height,int mapTexture) : width_(width), height_(height) {
     // 2次元配列の動的確保
     data_ = new int* [height_];
+    MapTexture_ = mapTexture;
     for (int y = 0; y < height_; ++y) {
         data_[y] = new int[width_];
         for (int x = 0; x < width_; ++x) {
@@ -17,6 +18,8 @@ Map::Map(int width, int height) : width_(width), height_(height) {
             }
         }
     }
+
+
 }
 
 Map::~Map() {
@@ -35,7 +38,8 @@ void Map::Draw(int originX, int originY, int tileSize) {
                 int drawY = originY + y * tileSize;
                 int tSize = tileSize;
 
-                Novice::DrawBox(drawX, drawY, tSize, tSize, 0.0f, 0xFFFFFFFF, kFillModeSolid);
+                //Novice::DrawBox(drawX, drawY, tSize, tSize, 0.0f, 0xFFFFFFFF, kFillModeSolid);
+                Novice::DrawSprite(drawX, drawY, MapTexture_, float(tSize)/64.0f, float(tSize)/64.0f, 0.0f, WHITE);
             }
         }
     }

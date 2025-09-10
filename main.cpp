@@ -27,8 +27,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int tilesX = windowWidth / tileSize;
     int tilesY = windowHeight / tileSize;
 
-    Map map(tilesX, tilesY);
-    Map map2(tilesX, tilesY); // 夢のマップ
+    int realMapTex = Novice::LoadTexture("stone_real.png");
+    int dreamMapTex = Novice::LoadTexture("stone_dream.png");
+
+    Map map(tilesX, tilesY, realMapTex);
+    Map map2(tilesX, tilesY, dreamMapTex); // 夢のマップ
 
     // プレイヤー初期位置をマップ中央に設定
     int playerSize = tileSize; // タイルと同じサイズ

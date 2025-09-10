@@ -23,17 +23,18 @@ private:
     int gravity_;     // 重力加速度
     int jumpStrength_;// ジャンプ初速
 
+    //テクスチャ保存変数
     int playerTexRight_ = 0;
     int playerTexLeft_ = 0;
 
-    // アニメーションを管理する変数
+    // アニメーション管理変数
     float animationTimer_ = 0.0f;
     int currentFrame_ = 0;
     const int frameCount_ = 4;         // アニメーションの総フレーム数
     const float frameDuration_ = 0.1f; // 1フレームあたりの表示時間（秒）
 
-    bool rightDirection_ = false;   //右を向いている
-    bool leftDirection_ = true;    //左を向いている
+    bool rightDirection_ = true;   //右を向いているか
+    bool leftDirection_ = false;    //左を向いているか
 
 private:
     void Animation();
