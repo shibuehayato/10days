@@ -2,7 +2,7 @@
 #include "Map.h"
 #include "Player.h"
 
-const char kWindowTitle[] = "10days";
+const char kWindowTitle[] = "4041_ユメノチカラ";
 
 enum Scene {
 	TITLE,
@@ -65,6 +65,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool isDrawing_ = true;
 	const float blinkDuration_ = 0.25f; //点滅周期
 
+	//数字テクスチャ読み込み
+	int power1 = Novice::LoadTexture("power1.png");
+	int power2 = Novice::LoadTexture("power2.png");
+	int power3 = Novice::LoadTexture("power3.png");
+	int power4 = Novice::LoadTexture("power4.png");
+	int power5 = Novice::LoadTexture("power5.png");
+
+	int currentPower = power1;
+	bool mapChange = true;	//現実
+	//bool numberstop = false;
 
 	// プレイヤー初期位置をマップ中央に設定
 	int playerSize = tileSize; // タイルと同じサイズ
@@ -170,6 +180,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (currentMap == &map) {
 					currentMap = &map2;
 					currentBackgroundTex = dreamBackTex;
+					if (mapChange == true /*&& numberstop == false*/)
+					{
+						mapChange = false;	//夢
+					}
+					else
+					{
+						mapChange = true;	//現実
+					}
 				}
 				else {
 					currentMap = &map;
@@ -197,6 +215,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			//重さの画像変更
+			if (weightLeft == 1)
+			{
+				currentPower = power1;
+			}
+			else if (weightLeft == 2)
+			{
+				currentPower = power2;
+			}
+			else if (weightLeft == 3)
+			{
+				currentPower = power3;
+			}
+			else if (weightLeft == 4)
+			{
+				currentPower = power4;
+			}
+			else if (weightLeft == 5)
+			{
+				currentPower = power5;
+			}
 
 			break;
 		case GAMECLEAR:
@@ -256,6 +295,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 操作説明画像
 			Novice::DrawSprite(0, 0, explanation, 1, 1, 0.0f, 0xffffffff);
 
+			if (weightLeft > weightRight && currentMap == &map)
+			{
+				Novice::DrawSprite(880, 560, currentPower, 1, 1, 0.0f, 0xffffffff);
+				Novice::DrawSprite(1120, 400, power4, 1, 1, 0.0f, 0xffffffff);
+			}
+			else
+			{
+				Novice::DrawSprite(880, 400, currentPower, 1, 1, 0.0f, 0xffffffff);
+				Novice::DrawSprite(1120, 560, power4, 1, 1, 0.0f, 0xffffffff);
+			}
 			player.Draw();
 			Novice::ScreenPrintf(640, 360, "Left Weight: %d", weightLeft);
 			Novice::ScreenPrintf(640, 390, "Right Weight: %d", weightRight);
