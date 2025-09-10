@@ -91,7 +91,7 @@ void Player::Update(const char keys[256], const Map& map, int tileSize) {
 }
 
 void Player::Draw() const {
-	Novice::DrawBox(x_, y_, size_, size_, 0.0f, 0xFFFFFFFF, kFillModeSolid);
+	//Novice::DrawBox(x_, y_, size_, size_, 0.0f, 0xFFFFFFFF, kFillModeSolid);
 
 	int srcX = currentFrame_ * 64;
 

@@ -34,6 +34,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Map map(tilesX, tilesY, realMapTex);
     Map map2(tilesX, tilesY, dreamMapTex); // 夢のマップ
 
+    //背景用テクスチャ読み込み
+    int realBackTex = Novice::LoadTexture("real_backGround.png");
+    int dreamBackTex = Novice::LoadTexture("dream_backGround.png");
+    int currentBackgroundTex = realBackTex;   //現在の描画している背景
+
     // プレイヤー初期位置をマップ中央に設定
     int playerSize = tileSize; // タイルと同じサイズ
     Player player(windowWidth / 2, windowHeight / 2, playerSize);
@@ -99,9 +104,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         if (keys[DIK_R] && !preKeys[DIK_R]) {
             if (currentMap == &map) {
                 currentMap = &map2;
+                currentBackgroundTex = dreamBackTex;
             }
             else {
                 currentMap = &map;
+                currentBackgroundTex = realBackTex;
 
                 // map を作り直して再配置
                 //map = Map(tilesX, tilesY);
@@ -133,6 +140,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         ///
 
         // 左上から描画（右下も画面端ぴったり）
+
+        Novice::DrawSprite(0, 0, currentBackgroundTex, windowWidth, windowHeight , 0.0f, WHITE);
+
         currentMap->Draw(0, 0, tileSize);
 
         player.Draw();
