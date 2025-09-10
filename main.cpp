@@ -2,7 +2,7 @@
 #include "Map.h"
 #include "Player.h"
 
-const char kWindowTitle[] = "10days";
+const char kWindowTitle[] = "ユメノチカラ";
 
 enum Scene {
 	TITLE,
@@ -96,6 +96,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 操作説明の画像
 	int explanation;
 	explanation = Novice::LoadTexture("./NoviceResources/explanation.png");
+
+	int Goal;
+	Goal = Novice::LoadTexture("./NoviceResources/Goal.png");
 
 	// マップとプレイヤーの初期化
 	InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
@@ -255,21 +258,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 操作説明画像
 			Novice::DrawSprite(0, 0, explanation, 1, 1, 0.0f, 0xffffffff);
+			Novice::DrawSprite(1100, 256, Goal, 0.5, 0.5, 0.0f, 0xffffffff);
 
 			player.Draw();
-			Novice::ScreenPrintf(640, 360, "Left Weight: %d", weightLeft);
-			Novice::ScreenPrintf(640, 390, "Right Weight: %d", weightRight);
+			//Novice::ScreenPrintf(640, 360, "Left Weight: %d", weightLeft);
+			//Novice::ScreenPrintf(640, 390, "Right Weight: %d", weightRight);
 
 			// map と map2 で表示する文字を切り替え
 			if (currentMap == &map) {
-				Novice::ScreenPrintf(640, 330, "gennjitu");   // mapのとき
+				//Novice::ScreenPrintf(640, 330, "gennjitu");   // mapのとき
 			}
 			else {
-				Novice::ScreenPrintf(640, 330, "yume");       // map2のとき
+				//Novice::ScreenPrintf(640, 330, "yume");       // map2のとき
 			}
 			break;
 		case GAMECLEAR:
-			Novice::ScreenPrintf(640, 330, "clear");
+			//Novice::ScreenPrintf(640, 330, "clear");
 
 			Novice::DrawSprite(0, 0, clearSceneTex, 1, 1, 0.0f, WHITE);
 
