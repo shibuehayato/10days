@@ -37,5 +37,9 @@ private:
     bool leftDirection_ = false;    //左を向いているか
 
 private:
+
+    /// <summary>
+    /// アニメーション管理関数
+    /// </summary>
     void Animation();
 };

@@ -23,6 +23,6 @@ private:
     int height_;
     int** data_; // マップデータ
 
-    int MapTexture_ = 0;
+    int MapTexture_ = 0;        //テクスチャ保存
 
 };

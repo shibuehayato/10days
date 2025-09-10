@@ -27,6 +27,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int tilesX = windowWidth / tileSize;
     int tilesY = windowHeight / tileSize;
 
+    //マップ用テクスチャ読み込み
     int realMapTex = Novice::LoadTexture("stone_real.png");
     int dreamMapTex = Novice::LoadTexture("stone_dream.png");
 
