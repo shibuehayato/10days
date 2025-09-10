@@ -20,7 +20,7 @@ void Player::Update(const char keys[256], const Map& map, int tileSize) {
 		rightDirection_ = false;
 		Animation();
 	}
-	else if (keys[DIK_D]) 
+	else if (keys[DIK_D])
 	{
 		nextX += speed_;
 		leftDirection_ = false;
@@ -87,25 +87,26 @@ void Player::Update(const char keys[256], const Map& map, int tileSize) {
 		velocityY_ = 0;
 	}
 
-	
+
 }
 
 void Player::Draw() const {
 	//Novice::DrawBox(x_, y_, size_, size_, 0.0f, 0xFFFFFFFF, kFillModeSolid);
 
 	int srcX = currentFrame_ * 64;
+	int texture = 0;
 
-	if (rightDirection_)
-	{
+	if (rightDirection_){
 		//右向きテクスチャ
-		Novice::DrawSpriteRect(x_, y_, srcX, 0, 64, 64, playerTexRight_, size_ / 256.0f, size_ / 64.0f, 0.0f, WHITE);
+		texture = playerTexRight_;
 	}
-	if (leftDirection_)
-	{
+	if (leftDirection_){
 		//左向きテクスチャ
-		Novice::DrawSpriteRect(x_, y_, srcX, 0, 64, 64, playerTexLeft_, size_ / 256.0f, size_ / 64.0f, 0.0f, WHITE);
-
+		texture = playerTexLeft_;
 	}
+
+	Novice::DrawSpriteRect(x_, y_, srcX, 0, 64, 64, texture, size_ / 256.0f, size_ / 64.0f, 0.0f, WHITE);
+
 }
 
 void Player::Animation()
