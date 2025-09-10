@@ -19,7 +19,7 @@ int goalY = 9;
 // プロトタイプ宣言（InitializeGame をファイル下部に置くなら必要）
 void InitializeGame(Player& player, Map& map, Map& map2,
 	int windowWidth, int windowHeight, int tileSize,
-	int& weightLeft, int& weightRight, Map*& currentMap);
+	int& weightLeft, int& weightRight, Map*& currentMap, int& currentPower);
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -76,6 +76,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int power5 = Novice::LoadTexture("power5.png");
 
 	int currentPower = power1;
+	
 
 
 	// プレイヤー初期位置をマップ中央に設定
@@ -114,7 +115,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// マップとプレイヤーの初期化
 	InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
-		weightLeft, weightRight, currentMap);
+		weightLeft, weightRight, currentMap, currentPower);
     //BGM
     int bgmHandle;
     int bgmVoiceHandle = -1;
@@ -124,7 +125,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     // マップとプレイヤーの初期化
     InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
-        weightLeft, weightRight, currentMap);
+        weightLeft, weightRight, currentMap, currentPower);
+
+	currentPower = power1;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -271,7 +274,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// スペースキーでタイトルに戻る
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
 				InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
-					weightLeft, weightRight, currentMap);
+					weightLeft, weightRight, currentMap, currentPower);
 				currentScene = TITLE;
 			}
 			break;
@@ -386,7 +389,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 void InitializeGame(Player& player, Map& map, Map& map2,
 	int windowWidth, int windowHeight, int tileSize,
-	int& weightLeft, int& weightRight, Map*& currentMap)
+	int& weightLeft, int& weightRight, Map*& currentMap,int& currentPower)
 {
 	int playerSize = tileSize;
 	player = Player(windowWidth / 2, windowHeight / 2, playerSize);
@@ -412,5 +415,6 @@ void InitializeGame(Player& player, Map& map, Map& map2,
 	weightRight = 4;
 
 	currentMap = &map;
+	currentPower = 0;
 
 }
