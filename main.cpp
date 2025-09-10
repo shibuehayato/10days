@@ -163,7 +163,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         //点滅描画
         if (isDrawing_)
         {
-            Novice::DrawSprite(0, 0, pressSpaceTex, 1, 1, 0.0f, WHITE);
+            Novice::DrawSprite(400, 500, pressSpaceTex, 1, 1, 0.0f, WHITE);
         }
 
         currentMap->Draw(0, 0, tileSize);
