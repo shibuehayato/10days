@@ -106,6 +106,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int explanation;
 	explanation = Novice::LoadTexture("./NoviceResources/explanation.png");
 
+	int Goal;
+	Goal = Novice::LoadTexture("./NoviceResources/Goal.png");
+
 	// マップとプレイヤーの初期化
 	InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
 		weightLeft, weightRight, currentMap);
@@ -285,6 +288,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 操作説明画像
 			Novice::DrawSprite(0, 0, explanation, 1, 1, 0.0f, 0xffffffff);
+			Novice::DrawSprite(1100, 256, Goal, 0.5, 0.5, 0.0f, 0xffffffff);
 
 			if (weightLeft > weightRight && currentMap == &map)
 			{
