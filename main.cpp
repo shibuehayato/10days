@@ -73,8 +73,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int power5 = Novice::LoadTexture("power5.png");
 
 	int currentPower = power1;
-	bool mapChange = true;	//現実
-	//bool numberstop = false;
+
 
 	// プレイヤー初期位置をマップ中央に設定
 	int playerSize = tileSize; // タイルと同じサイズ
@@ -180,14 +179,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (currentMap == &map) {
 					currentMap = &map2;
 					currentBackgroundTex = dreamBackTex;
-					if (mapChange == true /*&& numberstop == false*/)
-					{
-						mapChange = false;	//夢
-					}
-					else
-					{
-						mapChange = true;	//現実
-					}
 				}
 				else {
 					currentMap = &map;
