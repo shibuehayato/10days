@@ -12,6 +12,10 @@ public:
     // 描画
     void Draw() const;
 
+    // 座標を取得する関数を追加
+    int GetX() const { return x_; }
+    int GetY() const { return y_; }
+
 private:
     int x_;      // X座標（左上）
     int y_;      // Y座標（左上）
@@ -23,4 +27,3 @@ private:
     int gravity_;     // 重力加速度
     int jumpStrength_;// ジャンプ初速
 };
-
