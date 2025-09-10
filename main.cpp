@@ -78,6 +78,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     int explanation;
     explanation = Novice::LoadTexture("./NoviceResources/explanation.png");
 
+    //BGM
+    int bgmHandle;
+    int bgmVoiceHandle = -1;
+
+    bgmHandle = Novice::LoadAudio("./NoviceResources/Dreaming_world.mp3");
+    bgmVoiceHandle = Novice::PlayAudio(bgmHandle, true, 1.0f);
+
     // マップとプレイヤーの初期化
     InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
         weightLeft, weightRight, currentMap);
