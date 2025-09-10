@@ -5,9 +5,9 @@
 const char kWindowTitle[] = "10days";
 
 enum Scene {
-    TITLE,
-    GAME,
-    GAMECLEAR
+	TITLE,
+	GAME,
+	GAMECLEAR
 };
 
 // --- シーン管理変数 ---
@@ -18,247 +18,318 @@ int goalY = 9;
 
 // プロトタイプ宣言（InitializeGame をファイル下部に置くなら必要）
 void InitializeGame(Player& player, Map& map, Map& map2,
-    int windowWidth, int windowHeight, int tileSize,
-    int& weightLeft, int& weightRight, Map*& currentMap);
+	int windowWidth, int windowHeight, int tileSize,
+	int& weightLeft, int& weightRight, Map*& currentMap);
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-    const int windowWidth = 1280;
-    const int windowHeight = 720;
-    // ライブラリの初期化
-    Novice::Initialize(kWindowTitle, windowWidth, windowHeight);
+	const int windowWidth = 1280;
+	const int windowHeight = 720;
+	// ライブラリの初期化
+	Novice::Initialize(kWindowTitle, windowWidth, windowHeight);
 
-    // キー入力結果を受け取る箱
-    char keys[256] = { 0 };
-    char preKeys[256] = { 0 };
+	// キー入力結果を受け取る箱
+	char keys[256] = { 0 };
+	char preKeys[256] = { 0 };
 
-    int targetTilesX = 23; // 横
-    int targetTilesY = 18; // 縦5
+	int targetTilesX = 23; // 横
+	int targetTilesY = 18; // 縦5
 
-    // タイルサイズを計算
-    int tileSizeX = windowWidth / targetTilesX;
-    int tileSizeY = windowHeight / targetTilesY;
-    int tileSize = (tileSizeX < tileSizeY) ? tileSizeX : tileSizeY;
+	// タイルサイズを計算
+	int tileSizeX = windowWidth / targetTilesX;
+	int tileSizeY = windowHeight / targetTilesY;
+	int tileSize = (tileSizeX < tileSizeY) ? tileSizeX : tileSizeY;
 
-    // 実際のタイル数を画面サイズに合わせて再計算
-    int tilesX = windowWidth / tileSize;
-    int tilesY = windowHeight / tileSize;
+	// 実際のタイル数を画面サイズに合わせて再計算
+	int tilesX = windowWidth / tileSize;
+	int tilesY = windowHeight / tileSize;
 
-    Map map(tilesX, tilesY);
-    Map map2(tilesX, tilesY); // 夢のマップ
+	//マップ用テクスチャ読み込み
+	int realMapTex = Novice::LoadTexture("stone_real.png");
+	int dreamMapTex = Novice::LoadTexture("stone_dream.png");
 
-    // プレイヤー初期位置をマップ中央に設定
-    int playerSize = tileSize; // タイルと同じサイズ
-    Player player(windowWidth / 2, windowHeight / 2, playerSize);
+	Map map(tilesX, tilesY, realMapTex);
+	Map map2(tilesX, tilesY, dreamMapTex); // 夢のマップ
 
-    map.SetTile(29, 10, 1);  
-    map.SetTile(30, 10, 1);
-    map.SetTile(30, 9, 1);   // ゴール
-    map.SetTile(22, 10, 1);  // シーソー左
-    map.SetTile(28, 14, 1);  // シーソー右
-    map.SetTile(26, 13, 1);
+	//背景用テクスチャ読み込み
+	int realBackTex = Novice::LoadTexture("real_backGround.png");
+	int dreamBackTex = Novice::LoadTexture("dream_backGround.png");
+	int currentBackgroundTex = realBackTex;   //現在の描画している背景
 
-    // 夢のマップ
-    map2.SetTile(29, 10, 1);  
-    map2.SetTile(30, 10, 1); 
-    map2.SetTile(30, 9, 1);   // ゴール
-    map2.SetTile(22, 10, 1); // シーソー左
-    map2.SetTile(28, 14, 1); // シーソー右
-    map2.SetTile(26, 13, 1);
-    map2.SetTile(13, 14, 1);
+	int titleSceneTex = Novice::LoadTexture("Title.png");
+	int clearSceneTex = Novice::LoadTexture("Clear.png");
 
-    // 現在のマップを指すポインタ
-    Map* currentMap = &map;
+	//操作説明用テクスチャ読み込み
+	int pressSpaceTex = Novice::LoadTexture("pushSpase.png");
+	float blinkTimer_ = 0.0f;
+	bool isDrawing_ = true;
+	const float blinkDuration_ = 0.25f; //点滅周期
 
-    // --- ブロックの「重さ」 ---
-    int weightLeft = 0;   // (22,10) のブロックの重さ（増加可能）
-    int weightRight = 4;  // (28,14) のブロックの重さ（固定）
 
-    // 操作説明の画像
-    int explanation;
-    explanation = Novice::LoadTexture("./NoviceResources/explanation.png");
+	// プレイヤー初期位置をマップ中央に設定
+	int playerSize = tileSize; // タイルと同じサイズ
+	Player player(windowWidth / 2, windowHeight / 2, playerSize);
 
-    // マップとプレイヤーの初期化
-    InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
-        weightLeft, weightRight, currentMap);
+	map.SetTile(29, 10, 1);
+	map.SetTile(30, 10, 1);
+	map.SetTile(30, 9, 1);   // ゴール
+	map.SetTile(22, 10, 1);  // シーソー左
+	map.SetTile(28, 14, 1);  // シーソー右
+	map.SetTile(26, 13, 1);
 
-    // ウィンドウの×ボタンが押されるまでループ
-    while (Novice::ProcessMessage() == 0) {
-        // フレームの開始
-        Novice::BeginFrame();
+	// 夢のマップ
+	map2.SetTile(29, 10, 1);
+	map2.SetTile(30, 10, 1);
+	map2.SetTile(30, 9, 1);   // ゴール
+	map2.SetTile(22, 10, 1); // シーソー左
+	map2.SetTile(28, 14, 1); // シーソー右
+	map2.SetTile(26, 13, 1);
+	map2.SetTile(13, 14, 1);
 
-        // キー入力を受け取る
-        memcpy(preKeys, keys, 256);
-        Novice::GetHitKeyStateAll(keys);
+	// 現在のマップを指すポインタ
+	Map* currentMap = &map;
 
-        ///
-        /// ↓更新処理ここから
-        ///
+	// --- ブロックの「重さ」 ---
+	int weightLeft = 0;   // (22,10) のブロックの重さ（増加可能）
+	int weightRight = 4;  // (28,14) のブロックの重さ（固定）
 
-        switch (currentScene)
-        {
-        case TITLE:
-            // スペースキーでゲームへ
-            if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
-                currentScene = GAME;
-            }
-            break;
-        case GAME:
+	// 操作説明の画像
+	int explanation;
+	explanation = Novice::LoadTexture("./NoviceResources/explanation.png");
 
-            player.Update(keys, *currentMap, tileSize);
+	// マップとプレイヤーの初期化
+	InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
+		weightLeft, weightRight, currentMap);
 
-            // マウスクリックでブロックを置く
-            //int mouseX, mouseY;
-            //Novice::GetMousePosition(&mouseX, &mouseY);
-            //
-            //if (Novice::IsTriggerMouse(RI_MOUSE_LEFT_BUTTON_DOWN)) {
-            //    int tileX = mouseX / tileSize;
-            //    int tileY = mouseY / tileSize;
-            //    map.SetTile(tileX, tileY, 1); // ブロックを置く
-            //    
-            //}
+	// ウィンドウの×ボタンが押されるまでループ
+	while (Novice::ProcessMessage() == 0) {
+		// フレームの開始
+		Novice::BeginFrame();
 
-            // --- ゴール判定 ---
-            {
-                int playerTileX = player.GetX() / tileSize;
-                int playerTileY = player.GetY() / tileSize;
-                if (playerTileX == goalX && playerTileY == goalY) {
-                    currentScene = GAMECLEAR;
-                }
-            }
+		// キー入力を受け取る
+		memcpy(preKeys, keys, 256);
+		Novice::GetHitKeyStateAll(keys);
 
-            // --- map2 にいるときの操作 ---
-            if (currentMap == &map2) {
-                // 上キーで左ブロックの重さを増やす
-                if (keys[DIK_UP] && !preKeys[DIK_UP]) {
-                    if (weightLeft < 5) { // 最大5まで
-                        weightLeft++;
-                    }
-                }
-            }
+		
+		//↓更新処理ここから
+		
 
-            // --- マップ切り替え（Rキーで切り替え） ---
-            if (keys[DIK_R] && !preKeys[DIK_R]) {
-                if (currentMap == &map) {
-                    currentMap = &map2;
-                }
-                else {
-                    currentMap = &map;
+		switch (currentScene)
+		{
+		case TITLE:
 
-                    // map を作り直して再配置
-                    //map = Map(tilesX, tilesY);
-                    map.Clear();
-                    map.SetTile(29, 10, 1);
-                    map.SetTile(30, 10, 1);
-                    map.SetTile(26, 13, 1);
-                    
 
-                    if (weightLeft > weightRight) {
-                        // 左の方が重い → Y座標を入れ替える
-                        map.SetTile(22, 14, 1); // 左を下に
-                        map.SetTile(28, 10, 1); // 右を上に
-                    }
-                    else {
-                        // そのまま
-                        map.SetTile(22, 10, 1);
-                        map.SetTile(28, 14, 1);
-                    }
+			blinkTimer_ += 0.01f;
+			if (blinkTimer_ >= blinkDuration_)
+			{
+				isDrawing_ = !isDrawing_;
+				blinkTimer_ = 0.0f;
+			}
 
-                }
-            }
-            break;
-        case GAMECLEAR:
-            // スペースキーでタイトルに戻る
-            if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
-                InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
-                    weightLeft, weightRight, currentMap);
-                currentScene = TITLE;
-            }
-            break;
-        }
+			// スペースキーでゲームへ
+			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+				currentScene = GAME;
+			}
+			break;
+		case GAME:
 
-        ///
-        /// ↑更新処理ここまで
-        ///
+			player.Update(keys, *currentMap, tileSize);
 
-        ///
-        /// ↓描画処理ここから
-        ///
+			// マウスクリックでブロックを置く
+			//int mouseX, mouseY;
+			//Novice::GetMousePosition(&mouseX, &mouseY);
+			//
+			//if (Novice::IsTriggerMouse(RI_MOUSE_LEFT_BUTTON_DOWN)) {
+			//    int tileX = mouseX / tileSize;
+			//    int tileY = mouseY / tileSize;
+			//    map.SetTile(tileX, tileY, 1); // ブロックを置く
+			//    
+			//}
 
-        switch (currentScene)
-        {
-        case TITLE:
-            Novice::ScreenPrintf(540, 360, "Press SPACE to Start");
-            break;
-        case GAME:
-            // 左上から描画（右下も画面端ぴったり）
-            currentMap->Draw(0, 0, tileSize);
+			// --- ゴール判定 ---
+			{
+				int playerTileX = player.GetX() / tileSize;
+				int playerTileY = player.GetY() / tileSize;
+				if (playerTileX == goalX && playerTileY == goalY) {
+					currentScene = GAMECLEAR;
+				}
+			}
 
-            // 操作説明画像
-            Novice::DrawSprite(0, 0, explanation, 1, 1, 0.0f, 0xffffffff);
+			// --- map2 にいるときの操作 ---
+			if (currentMap == &map2) {
+				// 上キーで左ブロックの重さを増やす
+				if (keys[DIK_UP] && !preKeys[DIK_UP]) {
+					if (weightLeft < 5) { // 最大5まで
+						weightLeft++;
+					}
+				}
+			}
 
-            player.Draw();
-            Novice::ScreenPrintf(640, 360, "Left Weight: %d", weightLeft);
-            Novice::ScreenPrintf(640, 390, "Right Weight: %d", weightRight);
+			// --- マップ切り替え（Rキーで切り替え） ---
+			if (keys[DIK_R] && !preKeys[DIK_R]) {
+				if (currentMap == &map) {
+					currentMap = &map2;
+					currentBackgroundTex = dreamBackTex;
+				}
+				else {
+					currentMap = &map;
+					currentBackgroundTex = realBackTex;
 
-            // map と map2 で表示する文字を切り替え
-            if (currentMap == &map) {
-                Novice::ScreenPrintf(640, 330, "gennjitu");   // mapのとき
-            }
-            else {
-                Novice::ScreenPrintf(640, 330, "yume");       // map2のとき
-            }
-            break;
-        case GAMECLEAR:
-            Novice::ScreenPrintf(640, 330, "clear");
-            // スペースキーでタイトルに戻る
-            if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
-                currentScene = TITLE;
-            }
-            break;
-        }
+					// map を作り直して再配置
+					//map = Map(tilesX, tilesY);
+					map.Clear();
+					map.SetTile(29, 10, 1);
+					map.SetTile(30, 10, 1);
+					map.SetTile(26, 13, 1);
 
-        ///
-        /// ↑描画処理ここまで
-        ///
 
-        Novice::EndFrame();
+					if (weightLeft > weightRight) {
+						// 左の方が重い → Y座標を入れ替える
+						map.SetTile(22, 14, 1); // 左を下に
+						map.SetTile(28, 10, 1); // 右を上に
+					}
+					else {
+						// そのまま
+						map.SetTile(22, 10, 1);
+						map.SetTile(28, 14, 1);
+					}
 
-        if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
-            break;
-        }
-    }
+				}
+			}
 
-    Novice::Finalize();
-    return 0;
+
+			break;
+		case GAMECLEAR:
+
+
+			blinkTimer_ += 0.01f;
+			if (blinkTimer_ >= blinkDuration_)
+			{
+				isDrawing_ = !isDrawing_;
+				blinkTimer_ = 0.0f;
+			}
+
+			// スペースキーでタイトルに戻る
+			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+				InitializeGame(player, map, map2, windowWidth, windowHeight, tileSize,
+					weightLeft, weightRight, currentMap);
+				currentScene = TITLE;
+			}
+			break;
+		}
+
+
+
+
+		///
+		/// ↑更新処理ここまで
+		///
+
+		///
+		/// ↓描画処理ここから
+		///
+
+		switch (currentScene)
+		{
+		case TITLE:
+			//Novice::ScreenPrintf(540, 360, "Press SPACE to Start");
+			Novice::DrawSprite(0, 0, titleSceneTex, 1, 1, 0.0f, WHITE);
+
+			//点滅描画
+			if (isDrawing_)
+			{
+				Novice::DrawSprite(400, 500, pressSpaceTex, 1, 1, 0.0f, WHITE);
+			}
+
+			break;
+		case GAME:
+			// 左上から描画（右下も画面端ぴったり）
+			currentMap->Draw(0, 0, tileSize);
+			// 左上から描画（右下も画面端ぴったり）
+
+			Novice::DrawSprite(0, 0, currentBackgroundTex, windowWidth, windowHeight, 0.0f, WHITE);
+
+			
+
+			currentMap->Draw(0, 0, tileSize);
+
+			// 操作説明画像
+			Novice::DrawSprite(0, 0, explanation, 1, 1, 0.0f, 0xffffffff);
+
+			player.Draw();
+			Novice::ScreenPrintf(640, 360, "Left Weight: %d", weightLeft);
+			Novice::ScreenPrintf(640, 390, "Right Weight: %d", weightRight);
+
+			// map と map2 で表示する文字を切り替え
+			if (currentMap == &map) {
+				Novice::ScreenPrintf(640, 330, "gennjitu");   // mapのとき
+			}
+			else {
+				Novice::ScreenPrintf(640, 330, "yume");       // map2のとき
+			}
+			break;
+		case GAMECLEAR:
+			Novice::ScreenPrintf(640, 330, "clear");
+
+			Novice::DrawSprite(0, 0, clearSceneTex, 1, 1, 0.0f, WHITE);
+
+			//点滅描画
+			if (isDrawing_)
+			{
+				Novice::DrawSprite(400, 500, pressSpaceTex, 1, 1, 0.0f, WHITE);
+			}
+
+			// スペースキーでタイトルに戻る
+			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+				currentScene = TITLE;
+			}
+			break;
+		}
+
+		///
+		/// ↑描画処理ここまで
+		///
+
+		Novice::EndFrame();
+
+		if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) {
+			break;
+		}
+	}
+
+
+	Novice::Finalize();
+	return 0;
 }
 
+
+
 void InitializeGame(Player& player, Map& map, Map& map2,
-    int windowWidth, int windowHeight, int tileSize,
-    int& weightLeft, int& weightRight, Map*& currentMap)
+	int windowWidth, int windowHeight, int tileSize,
+	int& weightLeft, int& weightRight, Map*& currentMap)
 {
-    int playerSize = tileSize;
-    player = Player(windowWidth / 2, windowHeight / 2, playerSize);
+	int playerSize = tileSize;
+	player = Player(windowWidth / 2, windowHeight / 2, playerSize);
 
-    map.Clear();
-    map.SetTile(29, 10, 1);
-    map.SetTile(30, 10, 1);
-    map.SetTile(30, 9, 1);   // ゴール
-    map.SetTile(22, 10, 1);  // シーソー左
-    map.SetTile(28, 14, 1);  // シーソー右
-    map.SetTile(26, 13, 1);
+	map.Clear();
+	map.SetTile(29, 10, 1);
+	map.SetTile(30, 10, 1);
+	map.SetTile(30, 9, 1);   // ゴール
+	map.SetTile(22, 10, 1);  // シーソー左
+	map.SetTile(28, 14, 1);  // シーソー右
+	map.SetTile(26, 13, 1);
 
-    map2.Clear();
-    map2.SetTile(29, 10, 1);
-    map2.SetTile(30, 10, 1);
-    map2.SetTile(30, 9, 1);   // ゴール
-    map2.SetTile(22, 10, 1);
-    map2.SetTile(28, 14, 1);
-    map2.SetTile(26, 13, 1);
-    map2.SetTile(13, 14, 1);
+	map2.Clear();
+	map2.SetTile(29, 10, 1);
+	map2.SetTile(30, 10, 1);
+	map2.SetTile(30, 9, 1);   // ゴール
+	map2.SetTile(22, 10, 1);
+	map2.SetTile(28, 14, 1);
+	map2.SetTile(26, 13, 1);
+	map2.SetTile(13, 14, 1);
 
-    weightLeft = 0;
-    weightRight = 4;
+	weightLeft = 0;
+	weightRight = 4;
 
-    currentMap = &map;
+	currentMap = &map;
 }
